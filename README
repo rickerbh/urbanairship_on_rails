@@ -62,17 +62,17 @@ Example
 =======
 
 To Create and register a device
-	d = APN::Device.create(:token => "token_from_device")
-	d.register(options)
+	user.device.create(:token => "token_from_device")
+	user.device.register(options)
 
 To Read device and tags
-	d.read
+	user.device.read
 
 To unregister a device
-	d.unregister
+	user.device.unregister
 
 To destroy device record (and unregister)
-	d.destroy
+	user.device.destroy
 
 To create and push notification
 	n = APN::Notification.create(:badge=>'', :alert=>'', :sound=>'')
