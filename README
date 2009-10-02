@@ -71,7 +71,7 @@ Example
 
 To Create and register a device
 	user.device.create(:token => "token_from_device")
-	user.device.register(options)
+	user.device.register(options_hash) -> see urbanairship api doc for allowed options
 
 To Read device and tags
 	user.device.read
@@ -84,7 +84,7 @@ To destroy device record (and unregister)
 
 To create and push notification
 	n = APN::Notification.create(:badge=>'', :alert=>'', :sound=>'')
-	n.push
+	n.push(options_hash) -> see urbanairship api doc for allowed options
 
 
 
