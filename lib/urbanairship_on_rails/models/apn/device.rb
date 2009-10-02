@@ -60,17 +60,17 @@ class APN::Device < APN::Base
   # 
   # A PUT without an alias will remove any associated alias if the device token already exists. 
   # A PUT with an empty tag list will remove any associated tags.
-  def register(tag_array=nil)
+  def register(options=nil)
     puts "APN::Device.register"
-    payload = {:alias => self.user.id}
-    payload = {:tags => tag_array}.merge(payload) if tag_array
-    http_put("/api/device_tokens/#{self.token}", payload.to_json)
+    options = options.merge({:alias => self.user.id})
+    http_put("/api/device_tokens/#{self.token}", options.to_json)
   end
   
   # You can read a device token’s alias with an HTTP GET to /api/device_tokens/<device_token>, which returns application/json:
   # 
   # {"device_token": "some device token","alias": "your_user_id"}
   def read
+    puts "APN::Device.read"
     http_get("/api/device_tokens/#{self.token}")
   end
   
@@ -80,6 +80,7 @@ class APN::Device < APN::Base
   # 
   # When a token is DELETEd in this manner, any alias or tags will be cleared.
   def unregister
+    puts "APN::Device.unregister"
     http_delete("/api/device_tokens/#{token}")
   end
   

@@ -15,19 +15,11 @@ HOW TO CONFIGURE
 =======
 
 	=====
-	Add the following to application.yml
-
-	apn:
-	  app_key:
-	  app_secret:
-	  push_secret:
-
-	=====
 	Create an initializer named urbanairship.rb with the following content
 
-	UA::Config::app_key      = Settings.apn.app_key
-	UA::Config::app_secret   = Settings.apn.app_secret
-	UA::Config::push_secret  = Settings.apn.push_secret
+	UA::Config::app_key      = 'YOUR_APP_KEY'
+	UA::Config::app_secret   = 'YOUR_APP_SECRET'
+	UA::Config::push_secret  = 'YOUR_PUSH_SECRET'
 
 	=====
 	Create User => Device relationship
@@ -60,7 +52,7 @@ BROADCAST
 	NOT YET SUPPORTED
 
 FEEDBACK SERVICE
-	APN::Feedback.new 			=> HTTP GET to /api/device_tokens/feedback/?since=<timestamp> 
+	APN::Feedback.push(			=> HTTP GET to /api/device_tokens/feedback/?since=<timestamp> 
 
 STATISTICS
 	NOT YET SUPPORTED
@@ -69,6 +61,23 @@ STATISTICS
 Example
 =======
 
-Example goes here.
+To Create and register a device
+	d = APN::Device.create(:token => "token_from_device")
+	d.register(options)
+
+To Read device and tags
+	d.read
+
+To unregister a device
+	d.unregister
+
+To destroy device record (and unregister)
+	d.destroy
+
+To create and push notification
+	n = APN::Notification.create(:badge=>'', :alert=>'', :sound=>'')
+	n.push
+
+
 
 Copyright (c) 2009 [Russell Sherman(code-ronin@code-ronin.com)], released under the MIT license
