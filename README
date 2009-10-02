@@ -1,0 +1,74 @@
+===================
+URBAN AIRSHIP ON RAILS
+===================
+
+Borrowed Liberally from APN on Rails Gem but designed to interface with urbanairship for simplicity, ease of use, and speedy deployment of push notifications
+uses identical data schema to APN.. perhaps allowing future upgrade to APN
+
+=======
+DEPENDENCIES
+=======
+requires JSON gem
+
+=======
+HOW TO CONFIGURE
+=======
+
+	=====
+	Add the following to application.yml
+
+	apn:
+	  app_key:
+	  app_secret:
+	  push_secret:
+
+	=====
+	Create an initializer named urbanairship.rb with the following content
+
+	UA::Config::app_key      = Settings.apn.app_key
+	UA::Config::app_secret   = Settings.apn.app_secret
+	UA::Config::push_secret  = Settings.apn.push_secret
+
+	=====
+	Create User => Device relationship
+
+	belongs_to :device, :class_name=>"APN::Device"
+
+	=====
+	Set up a daily cron job to clean out inactive device registrations 
+		rake apn:feedback or
+		script/runner APN:Feedback.new
+
+
+=======
+API CALLS and current support level
+=======
+
+REGISTRATION
+	
+	APN::Device.register 		=> HTTP PUT to /api/device_tokens/<device_token>
+	APN::Device.read 			=> HTTP GET to /api/device_tokens/<device_token>
+	APN::Device.unregister 		=> HTTP DELETE to /api/device_tokens/<device_token>
+
+PUSH
+	APN::Notifcation.push		=> HTTP POST to /api/push/
+
+BATCH PUSH
+	NOT YET SUPPORTED
+
+BROADCAST
+	NOT YET SUPPORTED
+
+FEEDBACK SERVICE
+	APN::Feedback.new 			=> HTTP GET to /api/device_tokens/feedback/?since=<timestamp> 
+
+STATISTICS
+	NOT YET SUPPORTED
+
+=======
+Example
+=======
+
+Example goes here.
+
+Copyright (c) 2009 [Russell Sherman(code-ronin@code-ronin.com)], released under the MIT license
