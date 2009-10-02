@@ -15,6 +15,14 @@ HOW TO CONFIGURE
 =======
 
 	=====
+	Generate migrations for APN data
+	
+	script/generate apn_migrations
+	rake db:migrate
+	
+	you will then need to create a migration to extend your user model to include device_id
+	
+	=====
 	Create an initializer named urbanairship.rb with the following content
 
 	UA::Config::app_key      = 'YOUR_APP_KEY'
