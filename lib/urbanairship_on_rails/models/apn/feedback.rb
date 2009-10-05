@@ -32,7 +32,7 @@ class APN::Feedback < APN::Base
     time = 1.day.ago.iso8601
     puts "    since #{time}"
     
-    result = http_get("/api/device_tokens/feedback/?since=#{time}") 
+    result = http_get("/api/device_tokens/feedback/?since=#{time}", nil, {}, true) 
     self.code = result.code.to_s
     self.message = result.message.to_s
     self.body = result.body.to_s

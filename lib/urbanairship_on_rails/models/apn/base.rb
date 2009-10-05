@@ -19,24 +19,24 @@ module APN
       self.to_s.gsub("::", "_").tableize
     end
         
-    def http_get(url, data=nil, headers={})
+    def http_get(url, data=nil, headers={}, push=false)
       puts "APN::Base.http_get"
-      http_request(:get, url, data, headers)
+      http_request(:get, url, data, headers, push)
     end
     
-    def http_post(url, data=nil, headers={})
+    def http_post(url, data=nil, headers={}, push=false)
       puts "APN::Base.http_post"
-      http_request(:post, url, data, headers)
+      http_request(:post, url, data, headers, push)
     end
     
-    def http_put(url, data=nil, headers={})
+    def http_put(url, data=nil, headers={}, push=false)
       puts "APN::Base.http_put"
-      http_request(:put, url, data, headers)
+      http_request(:put, url, data, headers, push)
     end
     
-    def http_delete(url, data=nil, headers={})
+    def http_delete(url, data=nil, headers={}, push=false)
       puts "APN::Base.http_delete"
-      http_request(:delete, url, data, headers)      
+      http_request(:delete, url, data, headers, push)      
     end
 
     private
@@ -66,8 +66,8 @@ module APN
       end
     end
 
-    def http_request(method, url, data=nil, headers={})
-      puts "APN::Base.http_request(#{method.inspect}, #{url.inspect}, #{data.inspect})"
+    def http_request(method, url, data=nil, headers={}, push=false)
+      puts "APN::Base.http_request(#{method.inspect}, #{url.inspect}, #{data.inspect}, #{push.inspect})"
 
       headers['Content-Type'] = 'application/json'
 
@@ -82,7 +82,12 @@ module APN
         req = Net::HTTP::Delete.new(url, headers)
       end
       
-      req.basic_auth(UA::Config::app_key, UA::Config::app_secret)
+      if push
+        req.basic_auth(UA::Config::app_key, UA::Config::push_secret)
+      else
+        req.basic_auth(UA::Config::app_key, UA::Config::app_secret)
+      end
+      
       puts "auth #{UA::Config::app_key}:#{UA::Config::app_secret}"
 
       req.body = data.to_json if data

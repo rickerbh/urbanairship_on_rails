@@ -64,7 +64,7 @@ class APN::Notification < APN::Base
     puts options.inspect
     
     options = options.merge(:device_tokens=>[self.device.token])
-    http_post("/api/push/", options)
+    http_post("/api/push/", options, {}, true)
   end
     
 end # APN::Notification
