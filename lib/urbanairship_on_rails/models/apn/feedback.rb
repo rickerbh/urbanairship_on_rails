@@ -12,14 +12,17 @@ class APN::Feedback < APN::Base
   def initialize
     puts "APN::Feedback"
     
-    get_feedback { |results|             
-      result = JSON.parse(results) # parse json results
+    get_feedback { |results| 
+      puts results.inspect
+      if results            
+        result = JSON.parse(results) # parse json results
 
-      result.each do |item| # iterate results and delete devices that have been deactivated
-        puts "    search and destroy #{item['device_token']}"      
-        d = APN::Device.find_by_token(item['device_token'])
-        d.destroy if d
-      end      
+        result.each do |item| # iterate results and delete devices that have been deactivated
+          puts "    search and destroy #{item['device_token']}"      
+          d = APN::Device.find_by_token(item['device_token'])
+          d.destroy if d
+        end   
+      end   
     }    
   end
   

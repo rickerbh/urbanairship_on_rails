@@ -19,22 +19,22 @@ module APN
       self.to_s.gsub("::", "_").tableize
     end
         
-    def http_get(url, data=nil, headers = {})
+    def http_get(url, data=nil, headers={})
       puts "APN::Base.http_get"
       http_request(:get, url, data, headers)
     end
     
-    def http_post(url, data=nil, headers = {})
+    def http_post(url, data=nil, headers={})
       puts "APN::Base.http_post"
       http_request(:post, url, data, headers)
     end
     
-    def http_put(url, data=nil, headers = {})
+    def http_put(url, data=nil, headers={})
       puts "APN::Base.http_put"
       http_request(:put, url, data, headers)
     end
     
-    def http_delete(url, data=nil, headers = {})
+    def http_delete(url, data=nil, headers={})
       puts "APN::Base.http_delete"
       http_request(:delete, url, data, headers)      
     end
@@ -66,28 +66,29 @@ module APN
       end
     end
 
-    def http_request(method, url, data, headers = {})
+    def http_request(method, url, data=nil, headers={})
       puts "APN::Base.http_request(#{method.inspect}, #{url.inspect}, #{data.inspect})"
+
+      headers['Content-Type'] = 'application/json'
 
       case method
       when :get
-        headers['Content-Type'] ||= "application/json"
         req = Net::HTTP::Get.new(url, headers)
       when :put
-        headers['Content-Type'] ||= "application/json"
         req = Net::HTTP::Put.new(url, headers)
       when :post
-        # headers['Content-Type'] ||= "application/x-www-form-urlencoded"
-        headers['Content-Type'] ||= "application/json"
         req = Net::HTTP::Post.new(url, headers)
       when :delete
-        headers['Content-Type'] ||= "application/json"
         req = Net::HTTP::Delete.new(url, headers)
       end
-      puts "auth with #{UA::Config::app_key} : #{UA::Config::app_secret}"
-      req.basic_auth UA::Config::app_key, UA::Config::app_secret   
-      req.body = data
-            
+      
+      req.basic_auth(UA::Config::app_key, UA::Config::app_secret)
+      puts "auth #{UA::Config::app_key}:#{UA::Config::app_secret}"
+
+      req.body = data.to_json if data
+      puts "body #{req.body}"
+      
+      puts "#{UA::Config::push_host}:#{UA::Config::push_port}"
       http = Net::HTTP.new(UA::Config::push_host, UA::Config::push_port)
       http.use_ssl = true
 
@@ -95,7 +96,7 @@ module APN
         retry_exceptions do 
           begin
             response = it.request(req)
-            puts "Response #{response.code} #{response.message}:#{response.body}"
+            puts "\nResponse #{response.code} #{response.message}:#{response.body}"
           rescue EOFError => e
             raise ConnectionError, "The remote server dropped the connection"
           rescue Errno::ECONNRESET => e

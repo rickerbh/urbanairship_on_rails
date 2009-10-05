@@ -61,9 +61,8 @@ class APN::Notification < APN::Base
   # The time should be ISO 8601 format in UTC. If schedule_for is included, 
   # the response body will be application/json with the following structure:
   def push(options={})
-    payload = options.to_json
-    puts payload.inspect
-    http_post("/api/push/", payload.to_json)
+    puts options.inspect
+    http_post("/api/push/", options)
   end
     
 end # APN::Notification
