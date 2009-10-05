@@ -62,6 +62,8 @@ class APN::Notification < APN::Base
   # the response body will be application/json with the following structure:
   def push(options={})
     puts options.inspect
+    
+    options = options.merge(:device_tokens=>[self.device.token])
     http_post("/api/push/", options)
   end
     

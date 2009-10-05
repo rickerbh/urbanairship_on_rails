@@ -97,6 +97,7 @@ module APN
           begin
             response = it.request(req)
             puts "\nResponse #{response.code} #{response.message}:#{response.body}"
+            response
           rescue EOFError => e
             raise ConnectionError, "The remote server dropped the connection"
           rescue Errno::ECONNRESET => e
@@ -105,7 +106,7 @@ module APN
             raise RetriableConnectionError, "The remote server refused the connection"
           rescue Timeout::Error, Errno::ETIMEDOUT => e
             raise ConnectionError, "The connection to the remote server timed out"
-          end
+          end          
         end
       }      
     end

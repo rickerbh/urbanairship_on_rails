@@ -9,13 +9,13 @@ require 'json'
 # 
 class APN::Feedback < APN::Base
   
-  def initialize
+  def initialize(options=nil)
     puts "APN::Feedback"
-    
+    super(options)
     get_feedback { |results| 
       puts results.inspect
-      if results            
-        result = JSON.parse(results) # parse json results
+      if results.code.to_i == 200         
+        result = JSON.parse(results.body) # parse json results
 
         result.each do |item| # iterate results and delete devices that have been deactivated
           puts "    search and destroy #{item['device_token']}"      
@@ -33,6 +33,10 @@ class APN::Feedback < APN::Base
     puts "    since #{time}"
     
     result = http_get("/api/device_tokens/feedback/?since=#{time}") 
+    self.code = result.code.to_s
+    self.message = result.message.to_s
+    self.body = result.body.to_s
+    
     # result = '[
     #    {
     #        "device_token": "1234123412341234123412341234123412341234123412341234123412341234",
@@ -45,7 +49,7 @@ class APN::Feedback < APN::Base
     # ]'  
     
     yield result if block_given?
-    result
+    
   end
   
 end

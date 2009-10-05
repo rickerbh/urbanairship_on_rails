@@ -15,14 +15,6 @@ HOW TO CONFIGURE
 =======
 
 	=====
-	Generate migrations for APN data
-	
-	script/generate apn_migrations
-	rake db:migrate
-	
-	you will then need to create a migration to extend your user model to include device_id
-	
-	=====
 	Create an initializer named urbanairship.rb with the following content
 
 	UA::Config::app_key      = 'YOUR_APP_KEY'
@@ -71,7 +63,7 @@ Example
 
 To Create and register a device
 	user.device.create(:token => "token_from_device")
-	user.device.register(options_hash) -> see urbanairship api doc for allowed options
+	user.device.register(options)
 
 To Read device and tags
 	user.device.read
@@ -84,7 +76,7 @@ To destroy device record (and unregister)
 
 To create and push notification
 	n = APN::Notification.create(:badge=>'', :alert=>'', :sound=>'')
-	n.push(options_hash) -> see urbanairship api doc for allowed options
+	n.push
 
 
 
