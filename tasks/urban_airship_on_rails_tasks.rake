@@ -6,6 +6,11 @@
 namespace :apn do
   desc "retreive and process list of inactive devices"
   task :feedback => [:environment] do
-    APN::Feedback.new
+    APN::Feedback.create().run
+  end
+
+  desc "retreive and process list of inactive devices"
+  task :push => [:environment] do
+    APN::Notification.process_pending
   end
 end

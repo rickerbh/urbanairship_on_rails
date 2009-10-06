@@ -9,6 +9,7 @@ uses identical data schema to APN.. perhaps allowing future upgrade to APN
 DEPENDENCIES
 =======
 requires JSON gem
+Acts As State Machine
 
 =======
 HOW TO CONFIGURE
@@ -29,7 +30,11 @@ HOW TO CONFIGURE
 	=====
 	Set up a daily cron job to clean out inactive device registrations 
 		rake apn:feedback or
-		script/runner APN:Feedback.new
+		script/runner APN:Feedback.create().run
+
+	Set up a cron job to push and manage notifications
+		rake apn:push or
+		script/runner APN::Notification.process_pending
 
 
 =======
@@ -74,10 +79,11 @@ To unregister a device
 To destroy device record (and unregister)
 	user.device.destroy
 
-To create and push notification
-	n = APN::Notification.create(:badge=>'', :alert=>'', :sound=>'')
-	n.push
-
+To create push notification
+	user.device.create_notification.create(:badge=>'', :alert=>'', :sound=>'')
+	
+To immediately push a notification
+	user.device.notifications.last.push
 
 
 Copyright (c) 2009 [Russell Sherman(code-ronin@code-ronin.com)], released under the MIT license

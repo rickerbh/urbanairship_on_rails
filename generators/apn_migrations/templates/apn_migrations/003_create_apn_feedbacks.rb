@@ -5,6 +5,7 @@ class CreateApnFeedbacks < ActiveRecord::Migration # :nodoc:
       t.string :code
       t.string :message
       t.text :body
+      t.string :state
       t.timestamps
     end
   end

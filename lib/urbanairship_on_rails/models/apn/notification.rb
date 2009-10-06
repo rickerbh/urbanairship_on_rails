@@ -19,7 +19,24 @@ class APN::Notification < APN::Base
   extend ::ActionView::Helpers::TextHelper
   
   belongs_to :device, :class_name => 'APN::Device'
+
+
+  #
+  # MODEL STATE MACHINE
+  #
+  acts_as_state_machine :initial => :pending, :column => 'state'
+
+  state :pending
+  state :processed, :enter=>:update_sent_at
+
+  event :pend do
+    transitions :from => :processed, :to => :pending
+  end
   
+  event :process do
+    transitions :from => :active, :to => :processed
+  end
+      
   # An HTTP POST to /api/push/ performs a push notification to one or more users. 
   # The payload is in JSON with content-type application/json, with this structure:
   # {
@@ -62,9 +79,20 @@ class APN::Notification < APN::Base
   # the response body will be application/json with the following structure:
   def push(options={})
     puts options.inspect
-    
     options = options.merge(:device_tokens=>[self.device.token])
     http_post("/api/push/", options, {}, true)
+  end
+  
+  def update_sent_at
+    sent_at = Time.now
+  end
+  
+  def self.process_pending    
+    self.pending.each do |n|
+      puts "process #{n.inspect}"
+      n.push({:aps=>{:badge=>n.badge, :alert=>n.alert, :sound=>n.sound}})
+      n.process!
+    end    
   end
     
 end # APN::Notification

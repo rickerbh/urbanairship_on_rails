@@ -8,46 +8,57 @@ require 'json'
 # The return value is application/json with the following structure:
 # 
 class APN::Feedback < APN::Base
+
+  #
+  # MODEL STATE MACHINE
+  #
+  acts_as_state_machine :initial => :pending, :column => 'state'
+
+  state :pending
+  state :active
+  state :processed
+
+  event :pend do
+    transitions :from => [:active, :processed], :to => :pending
+  end
   
-  def initialize(options=nil)
-    puts "APN::Feedback"
-    super(options)
+  event :activate  do
+    transitions :from => [:pending, :processed], :to => :active
+  end
+
+  event :process do
+    transitions :from => :active, :to => :processed
+  end
+    
+  def run
+    raise "save feedback record before running" if self.new_record?
     get_feedback { |results| 
       puts results.inspect
       if results.code.to_i == 200         
         result = JSON.parse(results.body) # parse json results
 
         result.each do |item| # iterate results and delete devices that have been deactivated
-          puts "    search and destroy #{item['device_token']}"      
+          # puts "    search and destroy #{item['device_token']}"      
           d = APN::Device.find_by_token(item['device_token'])
           d.destroy if d
-        end   
+        end
+        
+        self.process!
       end   
-    }    
+    }        
   end
-  
-  # get_feedback returns json
   def get_feedback
-    puts "APN::get_feedback"
+    self.activate!
+    # puts "APN::get_feedback"
     time = 1.day.ago.iso8601
-    puts "    since #{time}"
+    # puts "    since #{time}"
     
     result = http_get("/api/device_tokens/feedback/?since=#{time}", nil, {}, true) 
+
     self.code = result.code.to_s
     self.message = result.message.to_s
     self.body = result.body.to_s
-    
-    # result = '[
-    #    {
-    #        "device_token": "1234123412341234123412341234123412341234123412341234123412341234",
-    #        "marked_inactive_on": "2009-06-22 10:05:00"
-    #    },
-    #    {
-    #        "device_token": "ABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCDABCD",
-    #        "marked_inactive_on": "2009-06-22 10:07:00"
-    #    }
-    # ]'  
-    
+        
     yield result if block_given?
     
   end
