@@ -8,25 +8,27 @@ require 'json'
 # The return value is application/json with the following structure:
 # 
 class APN::Feedback < APN::Base
+  include AASM
 
   #
   # MODEL STATE MACHINE
   #
-  acts_as_state_machine :initial => :pending, :column => 'state'
+  aasm_initial_state :pending
+  aasm_column :state
 
-  state :pending
-  state :active
-  state :processed
+  aasm_state :pending
+  aasm_state :active
+  aasm_state :processed
 
-  event :pend do
+  aasm_event :pend do
     transitions :from => [:active, :processed], :to => :pending
   end
   
-  event :activate  do
+  aasm_event :activate  do
     transitions :from => [:pending, :processed], :to => :active
   end
 
-  event :process do
+  aasm_event :process do
     transitions :from => :active, :to => :processed
   end
     

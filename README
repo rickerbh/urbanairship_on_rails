@@ -9,7 +9,12 @@ uses identical data schema to APN.. perhaps allowing future upgrade to APN
 DEPENDENCIES
 =======
 requires JSON gem
-Acts As State Machine
+AASM
+
+=======
+HOW TO INSTALL
+=======
+ruby script/plugin install git://github.com/rickerbh/urbanairship_on_rails.git
 
 =======
 HOW TO CONFIGURE
@@ -17,10 +22,12 @@ HOW TO CONFIGURE
 
 	=====
 	Create an initializer named urbanairship.rb with the following content
-
+	require File.dirname(__FILE__) + '/../../vendor/plugins/urbanairship_on_rails/lib/urbanairship_on_rails/libs/config'
 	UA::Config::app_key      = 'YOUR_APP_KEY'
 	UA::Config::app_secret   = 'YOUR_APP_SECRET'
 	UA::Config::push_secret  = 'YOUR_PUSH_SECRET'
+	UA::Config::push_host    = 'go.urbanairship.com'
+	UA::Config::push_port    = '443'
 
 	=====
 	Create User => Device relationship

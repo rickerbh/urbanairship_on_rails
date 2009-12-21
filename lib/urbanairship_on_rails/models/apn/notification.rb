@@ -15,26 +15,23 @@
 # As each APN::Notification is sent the <tt>sent_at</tt> column will be timestamped,
 # so as to not be sent again.
 class APN::Notification < APN::Base
+  include AASM
   include ::ActionView::Helpers::TextHelper
   extend ::ActionView::Helpers::TextHelper
   
   belongs_to :device, :class_name => 'APN::Device'
 
-
   #
   # MODEL STATE MACHINE
   #
-  acts_as_state_machine :initial => :pending, :column => 'state'
-
-  state :pending
-  state :processed, :enter=>:update_sent_at
-
-  event :pend do
-    transitions :from => :processed, :to => :pending
-  end
+  aasm_initial_state :pending
+  aasm_column :state
   
-  event :process do
-    transitions :from => :active, :to => :processed
+  aasm_state :pending
+  aasm_state :processed, :enter => :update_sent_at
+
+  aasm_event :process do
+    transitions :from => :pending, :to => :processed
   end
       
   # An HTTP POST to /api/push/ performs a push notification to one or more users. 
@@ -79,7 +76,7 @@ class APN::Notification < APN::Base
   # the response body will be application/json with the following structure:
   def push(options={})
     puts options.inspect
-    options = options.merge(:device_tokens=>[self.device.token])
+    options = options.merge(:device_tokens=>[self.device.token_for_ua])
     http_post("/api/push/", options, {}, true)
   end
   

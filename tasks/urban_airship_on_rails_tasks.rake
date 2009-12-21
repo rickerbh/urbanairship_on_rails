@@ -9,7 +9,7 @@ namespace :apn do
     APN::Feedback.create().run
   end
 
-  desc "retreive and process list of inactive devices"
+  desc "send all pending notifications to devices"
   task :push => [:environment] do
     APN::Notification.process_pending
   end

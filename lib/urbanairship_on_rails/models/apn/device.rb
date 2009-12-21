@@ -63,7 +63,7 @@ class APN::Device < APN::Base
   def register(options=nil)
     puts "APN::Device.register"
     options = options.merge({:alias => self.user.id}) if self.user
-    http_put("/api/device_tokens/#{self.token}", options)
+    http_put("/api/device_tokens/#{self.token_for_ua}", options)
   end
   
   # You can read a device token’s alias with an HTTP GET to /api/device_tokens/<device_token>, which returns application/json:
@@ -71,7 +71,7 @@ class APN::Device < APN::Base
   # {"device_token": "some device token","alias": "your_user_id"}
   def read
     puts "APN::Device.read"
-    http_get("/api/device_tokens/#{self.token}")
+    http_get("/api/device_tokens/#{self.token_for_ua}")
   end
   
   # An HTTP DELETE to /api/device_tokens/<device_token> will mark the device token as inactive; 
@@ -81,7 +81,11 @@ class APN::Device < APN::Base
   # When a token is DELETEd in this manner, any alias or tags will be cleared.
   def unregister
     puts "APN::Device.unregister"
-    http_delete("/api/device_tokens/#{self.token}")
+    http_delete("/api/device_tokens/#{self.token_for_ua}")
+  end
+  
+  def token_for_ua
+    self.token.gsub(' ', '').upcase
   end
   
   before_destroy :unregister  

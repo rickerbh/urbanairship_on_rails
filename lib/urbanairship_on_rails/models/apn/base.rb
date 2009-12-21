@@ -67,9 +67,9 @@ module APN
     end
 
     def http_request(method, url, data=nil, headers={}, push=false)
-      puts "APN::Base.http_request(#{method.inspect}, #{url.inspect}, #{data.inspect}, #{push.inspect})"
-
       headers['Content-Type'] = 'application/json'
+
+      puts "APN::Base.http_request(#{method.inspect}, #{url.inspect}, #{data.inspect}, #{push.inspect})"
 
       case method
       when :get
@@ -90,7 +90,11 @@ module APN
       
       puts "auth #{UA::Config::app_key}:#{UA::Config::app_secret}"
 
-      req.body = data.to_json if data
+      if data
+        req.body = data.to_json
+      else
+        req.body = "{}"
+      end
       puts "body #{req.body}"
       
       puts "#{UA::Config::push_host}:#{UA::Config::push_port}"
